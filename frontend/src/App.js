@@ -21,6 +21,7 @@ import {
 import FormPage from "@/pages/FormPage";
 import SigningPage from "@/pages/SigningPage";
 import TenantPage from "@/pages/TenantPage";
+import AdminPage from "@/pages/AdminPage";
 
 // Navigation Component
 const Navigation = () => {
