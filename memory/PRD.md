@@ -1,68 +1,61 @@
 # Securebooking - Komplett Demo PRD
 
 ## Original Problem Statement
-1. Redesign the Securebooking landing page
-2. Create agreement form page (/form) in the same style
-3. Implement complete demo with MOCKED BankID, Swish, and PDF generation
+1. Redesign Securebooking landing page
+2. Create agreement form connected to index
+3. Implement complete flow with MOCKED BankID, Swish, and PDF
 
-## User Choices
-- Design: "Snygg och rätt i tiden" (modern Scandinavian)
-- Integrations: MOCKED demo for pitch/presentation purposes
+## Corrected Flow (as per user request)
+1. **Hyresvärd skapar avtal** (sina uppgifter + bostad + hyra + hyresgästens e-post)
+2. **Avtal delas med hyresgäst** (länk genereras)
+3. **Hyresgäst öppnar** → fyller i sina uppgifter → signerar med BankID
+4. **Hyresvärd notifieras** → granskar → signerar med BankID → betalar **100 SEK** tjänsteavgift via Swish
+5. **Klart!** → Båda får PDF
 
 ## What's Been Implemented (2025-02-05)
 
 ### Landing Page ✓
-- Glassmorphism navigation
-- Hero section with trust badges, stats
-- "Så här fungerar det" 4-step process
-- Benefits section with image
-- FAQ accordion
-- CTA section and footer
+- Modern Scandinavian design
+- Hero, How it works, Benefits, FAQ, Footer
 
-### Agreement Form (/form) ✓
-- 4-step multi-step form (Parter, Objekt, Villkor, Bekräfta)
-- Form validation and state management
+### Landlord Form (/form) ✓
+- 4 steps: Dina uppgifter → Bostad → Hyresvillkor → Skicka
+- Only landlord fills their info + property + rental terms
+- Tenant email input on last step
+- Success modal with shareable tenant link
+- Shows 100 SEK service fee in summary
+
+### Tenant Page (/tenant/:id) ✓
+- Shows agreement details (property, period, rent, landlord)
+- Tenant fills in their details (name, personnummer, address, etc.)
 - Terms acceptance with expandable legal text
+- BankID signing
 
-### Backend API ✓
-- POST /api/agreements - Create agreement
-- GET /api/agreements/:id - Get agreement
-- GET /api/agreements - List all agreements
-- POST /api/agreements/:id/bankid/start - Start MOCK BankID
-- GET /api/agreements/:id/bankid/status/:ref - Check BankID status
-- POST /api/agreements/:id/swish/start - Start MOCK Swish
-- GET /api/agreements/:id/swish/status/:ref - Check Swish status
-- GET /api/agreements/:id/pdf - Generate and download PDF
-
-### Signing Flow (/sign/:id) ✓
-- Status tracking (pending_tenant, pending_landlord, pending_payment, completed)
-- Progress indicator with 4 steps
-- MOCK BankID signing component (auto-completes after ~6 sec)
-- MOCK Swish payment component (auto-completes after ~6 sec)
+### Landlord Signing Page (/sign/:id) ✓
+- Waiting view when tenant hasn't signed (with copy link)
+- Review view showing tenant's signed info
+- BankID signing for landlord
+- **Swish payment: 100 SEK service fee**
 - Completion view with PDF download
 
-### PDF Generation ✓
-- Full agreement details
-- Landlord and tenant information
-- Property details
-- Payment terms
-- Digital signature timestamps
-- Legal terms
+### Backend API ✓
+- POST /api/agreements - Create with landlord + tenant email
+- PUT /api/agreements/:id/tenant - Tenant updates their info
+- BankID start/status endpoints (MOCKED)
+- Swish start/status endpoints (MOCKED, 100 SEK)
+- PDF generation with all details
 
-## IMPORTANT: MOCKED Integrations
-⚠️ **BankID and Swish are MOCKED for demo purposes**
-- Real integration requires official certificates from Swedish banks
-- Mock auto-completes after 2 status checks (~6 seconds)
-- Perfect for pitch/demo presentations
+## ⚠️ MOCKED Integrations
+- **BankID**: Auto-completes after ~6 seconds (2 status checks)
+- **Swish**: Auto-completes after ~6 seconds (100 SEK service fee)
+- Perfect for demo/pitch presentations
 
 ## Tech Stack
-- Frontend: React 19, Tailwind CSS, Lucide React
+- Frontend: React 19, Tailwind CSS, React Router
 - Backend: FastAPI, MongoDB, ReportLab (PDF)
-- Design: Playfair Display + Manrope fonts
 
-## For Production
-To make this production-ready, you would need:
-1. BankID certificate from a Swedish bank
-2. Swish merchant agreement
-3. Real Swedish company registration
-4. SSL certificates and security audit
+## Routes
+- `/` - Landing page
+- `/form` - Landlord creates agreement
+- `/tenant/:id` - Tenant fills in details & signs
+- `/sign/:id` - Landlord reviews, signs & pays
