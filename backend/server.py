@@ -252,8 +252,8 @@ async def root():
 @api_router.post("/agreements", response_model=dict)
 async def create_agreement(data: AgreementCreate):
     agreement = Agreement(
-        landlord=data.landlord,
-        tenant=data.tenant,
+        landlord=data.landlord.model_dump(),
+        tenant=data.tenant.model_dump(),  # Convert to dict
         property=data.property,
         rental_period=data.rental_period,
         payment=data.payment,
@@ -263,6 +263,9 @@ async def create_agreement(data: AgreementCreate):
     
     doc = agreement.model_dump()
     await db.agreements.insert_one(doc)
+    
+    # TODO: Send email to tenant with link
+    # For demo, we'll just return the agreement ID
     
     return {"id": agreement.id, "status": agreement.status, "message": "Avtal skapat framgångsrikt"}
 
