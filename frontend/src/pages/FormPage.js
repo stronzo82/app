@@ -478,6 +478,7 @@ const FormPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [createdAgreementId, setCreatedAgreementId] = useState(null);
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     // Landlord
     landlordName: "",
@@ -513,10 +514,78 @@ const FormPage = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error when user types
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: null }));
+    }
+  };
+
+  // Validation functions for each step
+  const validateStep1 = () => {
+    const newErrors = {};
+    if (!formData.landlordName.trim()) newErrors.landlordName = "Namn är obligatoriskt";
+    if (!formData.landlordPersonnummer.trim()) newErrors.landlordPersonnummer = "Personnummer är obligatoriskt";
+    if (!formData.landlordAddress.trim()) newErrors.landlordAddress = "Adress är obligatoriskt";
+    if (!formData.landlordEmail.trim()) newErrors.landlordEmail = "E-post är obligatoriskt";
+    if (!formData.landlordPhone.trim()) newErrors.landlordPhone = "Telefon är obligatoriskt";
+    
+    // Email format validation
+    if (formData.landlordEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.landlordEmail)) {
+      newErrors.landlordEmail = "Ogiltig e-postadress";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateStep2 = () => {
+    const newErrors = {};
+    if (!formData.propertyAddress.trim()) newErrors.propertyAddress = "Adress är obligatoriskt";
+    if (!formData.periodFrom) newErrors.periodFrom = "Startdatum är obligatoriskt";
+    if (!formData.periodTo) newErrors.periodTo = "Slutdatum är obligatoriskt";
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateStep3 = () => {
+    const newErrors = {};
+    if (!formData.rentAmount) newErrors.rentAmount = "Hyresbelopp är obligatoriskt";
+    if (!formData.paymentMethod) newErrors.paymentMethod = "Betalningssätt är obligatoriskt";
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateStep4 = () => {
+    const newErrors = {};
+    if (!formData.tenantEmail.trim()) newErrors.tenantEmail = "E-post är obligatoriskt";
+    if (formData.tenantEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.tenantEmail)) {
+      newErrors.tenantEmail = "Ogiltig e-postadress";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const nextStep = () => {
-    if (currentStep < 4) {
+    let isValid = false;
+    
+    switch (currentStep) {
+      case 1:
+        isValid = validateStep1();
+        break;
+      case 2:
+        isValid = validateStep2();
+        break;
+      case 3:
+        isValid = validateStep3();
+        break;
+      default:
+        isValid = true;
+    }
+    
+    if (isValid && currentStep < 4) {
       setCurrentStep(prev => prev + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -530,8 +599,7 @@ const FormPage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.tenantEmail) {
-      alert("Du måste ange hyresgästens e-postadress.");
+    if (!validateStep4()) {
       return;
     }
     
