@@ -11,11 +11,18 @@ import {
   Home,
   FileText,
   User,
+  Calendar,
+  CreditCard,
+  Clock,
+  Mail,
+  Copy,
+  Check,
 } from "lucide-react";
 import axios from "axios";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+const SERVICE_FEE = 100; // SEK
 
 // Navigation Header
 const SigningNavigation = () => {
@@ -42,7 +49,7 @@ const StatusBadge = ({ status }) => {
   const statusConfig = {
     draft: { label: "Utkast", color: "bg-gray-100 text-gray-600" },
     pending_tenant_signature: { label: "Väntar på hyresgäst", color: "bg-yellow-100 text-yellow-700" },
-    pending_landlord_signature: { label: "Väntar på hyresvärd", color: "bg-blue-100 text-blue-700" },
+    pending_landlord_signature: { label: "Redo för din signering", color: "bg-blue-100 text-blue-700" },
     pending_payment: { label: "Väntar på betalning", color: "bg-orange-100 text-orange-700" },
     completed: { label: "Klart", color: "bg-green-100 text-green-700" },
     cancelled: { label: "Avbrutet", color: "bg-red-100 text-red-700" },
@@ -57,21 +64,223 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-// Mock BankID Component
-const BankIDSigning = ({ agreement, signerType, onComplete }) => {
-  const [status, setStatus] = useState("idle"); // idle, starting, pending, complete, error
+// Waiting for Tenant View
+const WaitingForTenant = ({ agreement }) => {
+  const [copied, setCopied] = useState(false);
+  const tenantLink = `${window.location.origin}/tenant/${agreement.id}`;
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(tenantLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="text-center" data-testid="waiting-for-tenant">
+      <div className="w-20 h-20 bg-yellow-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+        <Clock className="w-10 h-10 text-yellow-600" strokeWidth={1.5} />
+      </div>
+      
+      <h2 className="text-2xl mb-2" style={{ fontFamily: 'Playfair Display' }}>
+        Väntar på hyresgästen
+      </h2>
+      <p className="text-[#5A5A5A] mb-6 max-w-md mx-auto">
+        Avtalet har skickats till <strong>{agreement.tenant?.email}</strong>. 
+        Du får ett meddelande när hyresgästen har fyllt i sina uppgifter och signerat.
+      </p>
+
+      <div className="card-elevated max-w-md mx-auto mb-6">
+        <p className="text-sm text-[#5A5A5A] mb-3">Länk till hyresgästen:</p>
+        <div className="flex items-center gap-2">
+          <input 
+            type="text" 
+            value={tenantLink} 
+            readOnly 
+            className="flex-1 h-10 px-3 bg-[#F9F9F7] border border-[#E2E2E0] rounded-lg text-sm"
+          />
+          <button 
+            onClick={copyLink}
+            className="h-10 px-4 bg-[#1A3C34] text-white rounded-lg flex items-center gap-2 hover:bg-[#142F29] transition-colors"
+            data-testid="copy-tenant-link"
+          >
+            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-[#F9F9F7] p-4 rounded-lg max-w-md mx-auto text-left">
+        <h4 className="font-semibold text-[#1A3C34] mb-2">Nästa steg</h4>
+        <ol className="text-sm text-[#5A5A5A] space-y-2">
+          <li className="flex items-start gap-2">
+            <span className="w-5 h-5 bg-yellow-100 text-yellow-700 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">1</span>
+            Hyresgästen fyller i sina uppgifter och signerar med BankID
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="w-5 h-5 bg-[#E8E8E6] text-[#5A5A5A] rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">2</span>
+            Du granskar och signerar med BankID
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="w-5 h-5 bg-[#E8E8E6] text-[#5A5A5A] rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">3</span>
+            Betala {SERVICE_FEE} SEK via Swish
+          </li>
+        </ol>
+      </div>
+    </div>
+  );
+};
+
+// Agreement Review (for Landlord)
+const AgreementReview = ({ agreement, onProceed }) => {
+  const [accepted, setAccepted] = useState(false);
+
+  const propertyTypes = {
+    lagenhet: "Lägenhet",
+    hus: "Hus",
+    rum: "Rum",
+    stuga: "Stuga",
+    annat: "Annat"
+  };
+
+  return (
+    <div data-testid="agreement-review">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl mb-2" style={{ fontFamily: 'Playfair Display' }}>
+          Hyresgästen har signerat!
+        </h2>
+        <p className="text-[#5A5A5A]">
+          Granska avtalet och signera för att slutföra
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        {/* Tenant Info */}
+        <div className="card-elevated">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="icon-container">
+              <User className="w-5 h-5" strokeWidth={1.5} />
+            </div>
+            <h3 className="text-lg font-semibold text-[#1A3C34]">Hyresgäst (signerad med BankID)</h3>
+            <CheckCircle2 className="w-5 h-5 text-green-500 ml-auto" />
+          </div>
+          <div className="grid md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="text-[#5A5A5A]">Namn</p>
+              <p className="font-medium text-[#1A3C34]">{agreement.tenant?.name}</p>
+            </div>
+            <div>
+              <p className="text-[#5A5A5A]">Personnummer</p>
+              <p className="font-medium text-[#1A3C34]">{agreement.tenant?.personnummer}</p>
+            </div>
+            <div className="md:col-span-2">
+              <p className="text-[#5A5A5A]">Adress</p>
+              <p className="font-medium text-[#1A3C34]">
+                {agreement.tenant?.address}, {agreement.tenant?.postal_code} {agreement.tenant?.city}
+              </p>
+            </div>
+            <div>
+              <p className="text-[#5A5A5A]">E-post</p>
+              <p className="font-medium text-[#1A3C34]">{agreement.tenant?.email}</p>
+            </div>
+            <div>
+              <p className="text-[#5A5A5A]">Telefon</p>
+              <p className="font-medium text-[#1A3C34]">{agreement.tenant?.phone || "-"}</p>
+            </div>
+          </div>
+          <div className="mt-4 pt-4 border-t border-[#E2E2E0]">
+            <p className="text-sm text-green-600 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4" />
+              Signerat med BankID: {agreement.tenant_signed_at?.slice(0, 16).replace('T', ' ')}
+            </p>
+          </div>
+        </div>
+
+        {/* Property */}
+        <div className="card-elevated">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="icon-container">
+              <Home className="w-5 h-5" strokeWidth={1.5} />
+            </div>
+            <h3 className="text-lg font-semibold text-[#1A3C34]">Hyresobjekt</h3>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4 text-sm">
+            <div className="md:col-span-2">
+              <p className="text-[#5A5A5A]">Adress</p>
+              <p className="font-medium text-[#1A3C34]">{agreement.property?.address}</p>
+              <p className="text-[#5A5A5A]">{agreement.property?.postal_code} {agreement.property?.city}</p>
+            </div>
+            <div>
+              <p className="text-[#5A5A5A]">Typ</p>
+              <p className="font-medium text-[#1A3C34]">
+                {propertyTypes[agreement.property?.property_type] || agreement.property?.property_type || "-"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Period & Payment */}
+        <div className="card-elevated">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="icon-container">
+              <CreditCard className="w-5 h-5" strokeWidth={1.5} />
+            </div>
+            <h3 className="text-lg font-semibold text-[#1A3C34]">Hyresvillkor</h3>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="text-[#5A5A5A]">Hyresperiod</p>
+              <p className="font-medium text-[#1A3C34]">
+                {agreement.rental_period?.from_date} — {agreement.rental_period?.to_date}
+              </p>
+            </div>
+            <div>
+              <p className="text-[#5A5A5A]">Hyresbelopp</p>
+              <p className="font-medium text-[#1A3C34]">{agreement.payment?.rent_amount} SEK</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Accept and Proceed */}
+        <div className="card-elevated bg-[#1A3C34]/5">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={accepted}
+              onChange={(e) => setAccepted(e.target.checked)}
+              className="mt-1 w-5 h-5 rounded border-[#E2E2E0] text-[#1A3C34] focus:ring-[#1A3C34]"
+              data-testid="accept-review-checkbox"
+            />
+            <span className="text-[#1A3C34]">
+              Jag har granskat avtalet och hyresgästens uppgifter och godkänner innehållet
+            </span>
+          </label>
+          
+          <button
+            onClick={onProceed}
+            disabled={!accepted}
+            className={`mt-6 w-full btn-primary flex items-center justify-center gap-2 ${!accepted ? 'opacity-50 cursor-not-allowed' : ''}`}
+            data-testid="proceed-to-sign-btn"
+          >
+            Fortsätt till signering
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Mock BankID Component (for Landlord)
+const BankIDSigning = ({ agreement, onComplete }) => {
+  const [status, setStatus] = useState("idle");
   const [orderRef, setOrderRef] = useState(null);
   const [message, setMessage] = useState("");
-  const [personnummer, setPersonnummer] = useState("");
-
-  const signer = signerType === "tenant" ? agreement.tenant : agreement.landlord;
 
   const startSigning = async () => {
     setStatus("starting");
     try {
       const response = await axios.post(`${API}/agreements/${agreement.id}/bankid/start`, {
-        personnummer: personnummer || signer.personnummer,
-        signer_type: signerType
+        personnummer: agreement.landlord?.personnummer,
+        signer_type: "landlord"
       });
       setOrderRef(response.data.order_ref);
       setMessage(response.data.message);
@@ -115,33 +324,18 @@ const BankIDSigning = ({ agreement, signerType, onComplete }) => {
         Signera med BankID
       </h2>
       <p className="text-[#5A5A5A] mb-6">
-        {signerType === "tenant" ? "Hyresgäst" : "Hyresvärd"}: {signer.name}
+        {agreement.landlord?.name} ({agreement.landlord?.personnummer})
       </p>
 
       {status === "idle" && (
-        <>
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-[#1A3C34] mb-2">
-              Personnummer
-            </label>
-            <input
-              type="text"
-              value={personnummer || signer.personnummer}
-              onChange={(e) => setPersonnummer(e.target.value)}
-              placeholder="ÅÅÅÅMMDD-XXXX"
-              className="w-full max-w-xs mx-auto h-12 px-4 bg-white border border-[#E2E2E0] rounded-lg text-center"
-              data-testid="personnummer-input"
-            />
-          </div>
-          <button
-            onClick={startSigning}
-            className="btn-primary inline-flex items-center gap-2"
-            data-testid="start-bankid-btn"
-          >
-            Starta BankID
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </>
+        <button
+          onClick={startSigning}
+          className="btn-primary inline-flex items-center gap-2"
+          data-testid="start-bankid-btn"
+        >
+          Starta BankID
+          <ArrowRight className="w-4 h-4" />
+        </button>
       )}
 
       {status === "starting" && (
@@ -159,7 +353,7 @@ const BankIDSigning = ({ agreement, signerType, onComplete }) => {
           </div>
           <div className="bg-[#F9F9F7] p-4 rounded-lg max-w-sm mx-auto">
             <p className="text-sm text-[#5A5A5A]">
-              <strong>Demo-läge:</strong> Signeringen slutförs automatiskt om några sekunder...
+              <strong>Demo-läge:</strong> Signeringen slutförs automatiskt...
             </p>
           </div>
         </div>
@@ -189,19 +383,19 @@ const BankIDSigning = ({ agreement, signerType, onComplete }) => {
   );
 };
 
-// Mock Swish Payment Component
+// Mock Swish Payment Component (100 SEK service fee)
 const SwishPayment = ({ agreement, onComplete }) => {
   const [status, setStatus] = useState("idle");
   const [paymentRef, setPaymentRef] = useState(null);
   const [message, setMessage] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState(agreement.landlord?.phone || "");
 
   const startPayment = async () => {
     setStatus("starting");
     try {
       const response = await axios.post(`${API}/agreements/${agreement.id}/swish/start`, {
-        phone_number: phone || agreement.landlord.phone || "0701234567",
-        amount: agreement.payment.rent_amount
+        phone_number: phone || "0701234567",
+        amount: SERVICE_FEE
       });
       setPaymentRef(response.data.payment_ref);
       setMessage(response.data.message);
@@ -244,16 +438,16 @@ const SwishPayment = ({ agreement, onComplete }) => {
       <h2 className="text-2xl mb-2" style={{ fontFamily: 'Playfair Display' }}>
         Betala med Swish
       </h2>
-      <p className="text-[#5A5A5A] mb-2">Belopp att betala</p>
-      <p className="text-3xl font-semibold text-[#1A3C34] mb-6" style={{ fontFamily: 'Playfair Display' }}>
-        {agreement.payment.rent_amount} SEK
+      <p className="text-[#5A5A5A] mb-2">Tjänsteavgift för avtalet</p>
+      <p className="text-4xl font-bold text-[#1A3C34] mb-6" style={{ fontFamily: 'Playfair Display' }}>
+        {SERVICE_FEE} SEK
       </p>
 
       {status === "idle" && (
         <>
           <div className="mb-6">
             <label className="block text-sm font-medium text-[#1A3C34] mb-2">
-              Telefonnummer
+              Ditt telefonnummer
             </label>
             <input
               type="tel"
@@ -269,7 +463,7 @@ const SwishPayment = ({ agreement, onComplete }) => {
             className="bg-[#C66D5D] text-white px-8 py-4 rounded-full font-medium inline-flex items-center gap-2 hover:bg-[#B55D4D] transition-colors"
             data-testid="start-swish-btn"
           >
-            Öppna Swish
+            Betala {SERVICE_FEE} SEK
             <ArrowRight className="w-4 h-4" />
           </button>
         </>
@@ -290,7 +484,7 @@ const SwishPayment = ({ agreement, onComplete }) => {
           </div>
           <div className="bg-[#F9F9F7] p-4 rounded-lg max-w-sm mx-auto">
             <p className="text-sm text-[#5A5A5A]">
-              <strong>Demo-läge:</strong> Betalningen slutförs automatiskt om några sekunder...
+              <strong>Demo-läge:</strong> Betalningen slutförs automatiskt...
             </p>
           </div>
         </div>
@@ -336,8 +530,8 @@ const CompletionView = ({ agreement }) => {
         Avtalet är klart!
       </h2>
       <p className="text-[#5A5A5A] mb-8 max-w-md mx-auto">
-        Hyresavtalet har signerats av båda parter och betalningen är genomförd. 
-        Ladda ner avtalet som PDF nedan.
+        Hyresavtalet har signerats av båda parter. 
+        Ladda ner det färdiga avtalet som PDF nedan.
       </p>
 
       <div className="card-elevated max-w-md mx-auto mb-8">
@@ -345,35 +539,49 @@ const CompletionView = ({ agreement }) => {
           <FileText className="w-8 h-8 text-[#1A3C34]" />
           <div className="text-left">
             <p className="font-medium text-[#1A3C34]">Hyresavtal</p>
-            <p className="text-sm text-[#5A5A5A]">{agreement.property.address}</p>
+            <p className="text-sm text-[#5A5A5A]">{agreement.property?.address}</p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4 text-sm mb-4">
           <div className="bg-[#F9F9F7] p-3 rounded-lg">
             <p className="text-[#5A5A5A]">Hyresvärd</p>
-            <p className="font-medium text-[#1A3C34]">{agreement.landlord.name}</p>
+            <p className="font-medium text-[#1A3C34]">{agreement.landlord?.name}</p>
+            <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
+              <CheckCircle2 className="w-3 h-3" /> Signerad
+            </p>
           </div>
           <div className="bg-[#F9F9F7] p-3 rounded-lg">
             <p className="text-[#5A5A5A]">Hyresgäst</p>
-            <p className="font-medium text-[#1A3C34]">{agreement.tenant.name}</p>
+            <p className="font-medium text-[#1A3C34]">{agreement.tenant?.name}</p>
+            <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
+              <CheckCircle2 className="w-3 h-3" /> Signerad
+            </p>
           </div>
         </div>
-        <div className="flex items-center justify-between text-sm border-t border-[#E2E2E0] pt-4">
-          <span className="text-[#5A5A5A]">Hyresbelopp</span>
-          <span className="font-semibold text-[#1A3C34]">{agreement.payment.rent_amount} SEK</span>
+        <div className="text-sm border-t border-[#E2E2E0] pt-4 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[#5A5A5A]">Hyresbelopp</span>
+            <span className="font-semibold text-[#1A3C34]">{agreement.payment?.rent_amount} SEK</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-[#5A5A5A]">Period</span>
+            <span className="font-medium text-[#1A3C34]">
+              {agreement.rental_period?.from_date} — {agreement.rental_period?.to_date}
+            </span>
+          </div>
         </div>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <button
           onClick={downloadPdf}
-          className="btn-primary inline-flex items-center gap-2"
+          className="btn-primary inline-flex items-center justify-center gap-2"
           data-testid="download-pdf-btn"
         >
           <Download className="w-5 h-5" />
           Ladda ner PDF
         </button>
-        <Link to="/" className="btn-secondary inline-flex items-center gap-2" data-testid="back-home-btn">
+        <Link to="/" className="btn-secondary inline-flex items-center justify-center gap-2" data-testid="back-home-btn">
           <Home className="w-5 h-5" />
           Till startsidan
         </Link>
@@ -385,15 +593,35 @@ const CompletionView = ({ agreement }) => {
 // Main Signing Page
 const SigningPage = () => {
   const { agreementId } = useParams();
-  const navigate = useNavigate();
   const [agreement, setAgreement] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [step, setStep] = useState("loading"); // loading, waiting, review, sign, payment, complete
 
   const fetchAgreement = useCallback(async () => {
     try {
       const response = await axios.get(`${API}/agreements/${agreementId}`);
-      setAgreement(response.data);
+      const data = response.data;
+      setAgreement(data);
+      
+      // Determine current step based on status
+      switch (data.status) {
+        case "pending_tenant_signature":
+          setStep("waiting");
+          break;
+        case "pending_landlord_signature":
+          setStep("review");
+          break;
+        case "pending_payment":
+          setStep("payment");
+          break;
+        case "completed":
+          setStep("complete");
+          break;
+        default:
+          setStep("waiting");
+      }
+      
       setLoading(false);
     } catch (err) {
       setError("Kunde inte hämta avtalet");
@@ -403,7 +631,20 @@ const SigningPage = () => {
 
   useEffect(() => {
     fetchAgreement();
-  }, [fetchAgreement]);
+    
+    // Poll for updates when waiting for tenant
+    const interval = setInterval(() => {
+      if (step === "waiting") {
+        fetchAgreement();
+      }
+    }, 10000);
+    
+    return () => clearInterval(interval);
+  }, [fetchAgreement, step]);
+
+  const handleReviewComplete = () => {
+    setStep("sign");
+  };
 
   const handleSigningComplete = () => {
     fetchAgreement();
@@ -438,49 +679,10 @@ const SigningPage = () => {
     );
   }
 
-  const renderCurrentStep = () => {
-    switch (agreement.status) {
-      case "pending_tenant_signature":
-        return (
-          <BankIDSigning 
-            key={`bankid-tenant-${agreement.id}`}
-            agreement={agreement} 
-            signerType="tenant" 
-            onComplete={handleSigningComplete}
-          />
-        );
-      case "pending_landlord_signature":
-        return (
-          <BankIDSigning 
-            key={`bankid-landlord-${agreement.id}`}
-            agreement={agreement} 
-            signerType="landlord" 
-            onComplete={handleSigningComplete}
-          />
-        );
-      case "pending_payment":
-        return (
-          <SwishPayment 
-            key={`swish-${agreement.id}`}
-            agreement={agreement} 
-            onComplete={handlePaymentComplete}
-          />
-        );
-      case "completed":
-        return <CompletionView agreement={agreement} />;
-      default:
-        return (
-          <div className="text-center">
-            <p>Status: {agreement.status}</p>
-          </div>
-        );
-    }
-  };
-
   // Progress indicator
   const steps = [
     { key: "tenant", label: "Hyresgäst signerar", done: !!agreement.tenant_signed_at },
-    { key: "landlord", label: "Hyresvärd signerar", done: !!agreement.landlord_signed_at },
+    { key: "landlord", label: "Du signerar", done: !!agreement.landlord_signed_at },
     { key: "payment", label: "Betalning", done: !!agreement.payment_completed_at },
     { key: "complete", label: "Klart", done: agreement.status === "completed" },
   ];
@@ -497,26 +699,30 @@ const SigningPage = () => {
             <h1 className="text-3xl md:text-4xl mt-4 mb-2" style={{ fontFamily: 'Playfair Display' }}>
               Hyresavtal
             </h1>
-            <p className="text-[#5A5A5A]">{agreement.property.address}</p>
+            <p className="text-[#5A5A5A]">{agreement.property?.address}</p>
           </div>
 
           {/* Progress */}
           <div className="flex items-center justify-center gap-2 mb-12" data-testid="signing-progress">
-            {steps.map((step, index) => (
-              <div key={step.key} className="flex items-center">
+            {steps.map((s, index) => (
+              <div key={s.key} className="flex items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
-                  ${step.done ? 'bg-green-500 text-white' : 'bg-[#E8E8E6] text-[#5A5A5A]'}`}>
-                  {step.done ? <CheckCircle2 className="w-5 h-5" /> : index + 1}
+                  ${s.done ? 'bg-green-500 text-white' : 'bg-[#E8E8E6] text-[#5A5A5A]'}`}>
+                  {s.done ? <CheckCircle2 className="w-5 h-5" /> : index + 1}
                 </div>
                 {index < steps.length - 1 && (
-                  <div className={`w-8 md:w-16 h-0.5 mx-1 ${step.done ? 'bg-green-500' : 'bg-[#E8E8E6]'}`}></div>
+                  <div className={`w-8 md:w-16 h-0.5 mx-1 ${s.done ? 'bg-green-500' : 'bg-[#E8E8E6]'}`}></div>
                 )}
               </div>
             ))}
           </div>
 
           {/* Current Step Content */}
-          {renderCurrentStep()}
+          {step === "waiting" && <WaitingForTenant agreement={agreement} />}
+          {step === "review" && <AgreementReview agreement={agreement} onProceed={handleReviewComplete} />}
+          {step === "sign" && <BankIDSigning agreement={agreement} onComplete={handleSigningComplete} />}
+          {step === "payment" && <SwishPayment agreement={agreement} onComplete={handlePaymentComplete} />}
+          {step === "complete" && <CompletionView agreement={agreement} />}
         </div>
       </main>
     </div>
