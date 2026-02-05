@@ -6,7 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List
 import uuid
 from datetime import datetime, timezone
@@ -32,6 +32,113 @@ db = client[os.environ['DB_NAME']]
 
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# =====================
+# MOCK EMAIL SERVICE
+# =====================
+async def send_mock_email(to_email: str, subject: str, body: str):
+    """Mock email service - logs to console instead of sending real emails"""
+    logger.info("=" * 60)
+    logger.info("📧 MOCK EMAIL NOTIFICATION")
+    logger.info("=" * 60)
+    logger.info(f"To: {to_email}")
+    logger.info(f"Subject: {subject}")
+    logger.info("-" * 40)
+    logger.info(f"Body:\n{body}")
+    logger.info("=" * 60)
+    
+    # Store in database for admin panel
+    await db.email_logs.insert_one({
+        "to": to_email,
+        "subject": subject,
+        "body": body,
+        "sent_at": datetime.now(timezone.utc).isoformat(),
+        "status": "sent (mocked)"
+    })
+    
+    return True
+
+async def notify_tenant_new_agreement(tenant_email: str, landlord_name: str, property_address: str, agreement_id: str):
+    """Notify tenant that they have received a new agreement to sign"""
+    subject = f"Du har fått ett hyresavtal från {landlord_name}"
+    body = f"""Hej!
+
+{landlord_name} har bjudit in dig att signera ett hyresavtal för:
+{property_address}
+
+Klicka på länken nedan för att granska avtalet och fylla i dina uppgifter:
+[LÄNK TILL AVTAL]
+
+Avtals-ID: {agreement_id[:8]}
+
+Med vänliga hälsningar,
+Securebooking
+"""
+    await send_mock_email(tenant_email, subject, body)
+
+async def notify_landlord_tenant_signed(landlord_email: str, landlord_name: str, tenant_name: str, property_address: str, agreement_id: str):
+    """Notify landlord that tenant has signed the agreement"""
+    subject = f"Hyresgästen har signerat avtalet - Din tur att signera"
+    body = f"""Hej {landlord_name}!
+
+Goda nyheter! {tenant_name} har nu signerat hyresavtalet för:
+{property_address}
+
+Du kan nu granska hyresgästens uppgifter och slutföra avtalet genom att:
+1. Granska avtalet
+2. Signera med BankID
+3. Betala tjänsteavgiften (100 SEK)
+
+Klicka här för att slutföra avtalet:
+[LÄNK TILL AVTAL]
+
+Avtals-ID: {agreement_id[:8]}
+
+Med vänliga hälsningar,
+Securebooking
+"""
+    await send_mock_email(landlord_email, subject, body)
+
+async def notify_both_agreement_completed(landlord_email: str, tenant_email: str, landlord_name: str, tenant_name: str, property_address: str, agreement_id: str):
+    """Notify both parties that the agreement is complete"""
+    subject = "Hyresavtalet är nu klart!"
+    
+    # Landlord email
+    landlord_body = f"""Hej {landlord_name}!
+
+Hyresavtalet för {property_address} är nu komplett!
+
+Båda parter har signerat och betalningen är genomförd.
+Du kan ladda ner avtalet som PDF när som helst.
+
+Avtals-ID: {agreement_id[:8]}
+
+Med vänliga hälsningar,
+Securebooking
+"""
+    await send_mock_email(landlord_email, subject, landlord_body)
+    
+    # Tenant email
+    tenant_body = f"""Hej {tenant_name}!
+
+Hyresavtalet för {property_address} är nu komplett!
+
+Båda parter har signerat avtalet.
+Du kan kontakta hyresvärden ({landlord_name}) för mer information.
+
+Avtals-ID: {agreement_id[:8]}
+
+Med vänliga hälsningar,
+Securebooking
+"""
+    await send_mock_email(tenant_email, subject, tenant_body)
 
 # Enums
 class AgreementStatus(str, Enum):
