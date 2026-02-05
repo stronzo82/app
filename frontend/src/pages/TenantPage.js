@@ -397,6 +397,7 @@ const TenantPage = () => {
   const [error, setError] = useState(null);
   const [step, setStep] = useState("info"); // info, sign, complete
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
   const [tenantData, setTenantData] = useState({
     name: "",
     personnummer: "",
@@ -430,11 +431,25 @@ const TenantPage = () => {
   const handleTenantDataChange = (e) => {
     const { name, value } = e.target;
     setTenantData(prev => ({ ...prev, [name]: value }));
+    // Clear error when user types
+    if (validationErrors[name]) {
+      setValidationErrors(prev => ({ ...prev, [name]: null }));
+    }
+  };
+
+  const validateTenantData = () => {
+    const errors = {};
+    if (!tenantData.name.trim()) errors.name = "Namn är obligatoriskt";
+    if (!tenantData.personnummer.trim()) errors.personnummer = "Personnummer är obligatoriskt";
+    if (!tenantData.address.trim()) errors.address = "Adress är obligatoriskt";
+    if (!tenantData.phone.trim()) errors.phone = "Telefon är obligatoriskt";
+    
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleContinueToSign = async () => {
-    if (!tenantData.name || !tenantData.personnummer || !tenantData.address) {
-      alert("Fyll i alla obligatoriska fält");
+    if (!validateTenantData()) {
       return;
     }
     
