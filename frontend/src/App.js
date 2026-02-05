@@ -19,6 +19,7 @@ import {
   BadgeCheck,
 } from "lucide-react";
 import FormPage from "@/pages/FormPage";
+import SigningPage from "@/pages/SigningPage";
 
 // Navigation Component
 const Navigation = () => {
