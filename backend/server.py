@@ -54,12 +54,21 @@ class SecurityType(str, Enum):
 
 # Models
 class PersonInfo(BaseModel):
-    name: str
-    personnummer: str
-    address: str
+    name: Optional[str] = ""
+    personnummer: Optional[str] = ""
+    address: Optional[str] = ""
     postal_code: Optional[str] = ""
     city: Optional[str] = ""
     email: Optional[str] = ""
+    phone: Optional[str] = ""
+
+class TenantInfo(BaseModel):
+    email: str
+    name: Optional[str] = ""
+    personnummer: Optional[str] = ""
+    address: Optional[str] = ""
+    postal_code: Optional[str] = ""
+    city: Optional[str] = ""
     phone: Optional[str] = ""
 
 class PropertyInfo(BaseModel):
