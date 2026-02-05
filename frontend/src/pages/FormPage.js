@@ -88,7 +88,7 @@ const ProgressSteps = ({ currentStep }) => {
 };
 
 // Input Field Component
-const InputField = ({ label, required, type = "text", placeholder, value, onChange, name, testId }) => {
+const InputField = ({ label, required, type = "text", placeholder, value, onChange, name, testId, error }) => {
   return (
     <div className="space-y-2">
       <label className="block text-sm font-medium text-[#1A3C34]">
@@ -100,9 +100,10 @@ const InputField = ({ label, required, type = "text", placeholder, value, onChan
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full h-12 px-4 bg-white border border-[#E2E2E0] rounded-lg text-[#1A1A1A] placeholder:text-[#B0B0B0] focus:outline-none focus:ring-2 focus:ring-[#1A3C34] focus:border-transparent transition-all"
+        className={`w-full h-12 px-4 bg-white border rounded-lg text-[#1A1A1A] placeholder:text-[#B0B0B0] focus:outline-none focus:ring-2 focus:ring-[#1A3C34] focus:border-transparent transition-all ${error ? 'border-red-500' : 'border-[#E2E2E0]'}`}
         data-testid={testId}
       />
+      {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
   );
 };
