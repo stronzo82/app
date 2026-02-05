@@ -467,6 +467,9 @@ async def check_bankid_status(agreement_id: str, order_ref: str):
         # Update agreement with signature
         now = datetime.now(timezone.utc).isoformat()
         
+        # Get agreement for email notifications
+        agreement = await db.agreements.find_one({"id": agreement_id}, {"_id": 0})
+        
         if session['signer_type'] == 'tenant':
             await db.agreements.update_one(
                 {"id": agreement_id},
@@ -476,6 +479,16 @@ async def check_bankid_status(agreement_id: str, order_ref: str):
                     "updated_at": now
                 }}
             )
+            
+            # Send email to landlord that tenant has signed
+            if agreement:
+                await notify_landlord_tenant_signed(
+                    landlord_email=agreement['landlord'].get('email', ''),
+                    landlord_name=agreement['landlord'].get('name', ''),
+                    tenant_name=agreement['tenant'].get('name', ''),
+                    property_address=agreement['property'].get('address', ''),
+                    agreement_id=agreement_id
+                )
         else:  # landlord
             await db.agreements.update_one(
                 {"id": agreement_id},
