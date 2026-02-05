@@ -730,12 +730,21 @@ const FormPage = () => {
             ) : (
               <button
                 onClick={handleSubmit}
-                className={`btn-primary flex items-center gap-2 ${!termsAccepted ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={!termsAccepted}
+                className={`btn-primary flex items-center gap-2 ${(!termsAccepted || isSubmitting) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={!termsAccepted || isSubmitting}
                 data-testid="btn-submit"
               >
-                Skapa hyresavtal
-                <ArrowRight className="w-4 h-4" />
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Skapar avtal...
+                  </>
+                ) : (
+                  <>
+                    Skapa hyresavtal
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
               </button>
             )}
           </div>
