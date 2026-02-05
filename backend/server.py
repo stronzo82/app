@@ -604,6 +604,12 @@ async def get_agreement_pdf(agreement_id: str):
         }
     )
 
+# Get Email Logs (for admin panel)
+@api_router.get("/email-logs")
+async def get_email_logs():
+    logs = await db.email_logs.find({}, {"_id": 0}).sort("sent_at", -1).to_list(50)
+    return logs
+
 # Include router
 app.include_router(api_router)
 
@@ -614,12 +620,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
