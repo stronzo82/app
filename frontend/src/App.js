@@ -119,13 +119,13 @@ const HeroSection = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="btn-primary flex items-center justify-center gap-2" data-testid="hero-cta-primary">
+              <Link to="/form" className="btn-primary flex items-center justify-center gap-2" data-testid="hero-cta-primary">
                 Skapa hyresavtal
                 <ArrowRight className="w-5 h-5" />
-              </button>
-              <button className="btn-secondary flex items-center justify-center gap-2" data-testid="hero-cta-secondary">
+              </Link>
+              <a href="#hur-det-fungerar" className="btn-secondary flex items-center justify-center gap-2" data-testid="hero-cta-secondary">
                 Se hur det fungerar
-              </button>
+              </a>
             </div>
 
             {/* Trust Stats */}
