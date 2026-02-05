@@ -1,0 +1,114 @@
+{
+  "identity": {
+    "name": "Securebooking",
+    "tone": "Calm Authority, Scandinavian Minimalism, Trustworthy, Human",
+    "archetype": "Organic & Earthy (Trust, Growth, Calm)",
+    "theme_mode": "light"
+  },
+  "typography": {
+    "primary_font": "Manrope",
+    "secondary_font": "Playfair Display",
+    "heading_styles": "font-serif tracking-tight font-medium text-primary",
+    "body_styles": "font-sans text-muted-foreground leading-relaxed",
+    "font_installation": "Import via Google Fonts: Playfair Display (400, 600, 700) and Manrope (400, 500, 600)"
+  },
+  "colors": {
+    "palette": {
+      "background": "#F9F9F7",
+      "foreground": "#1A1A1A",
+      "primary": "#1A3C34",
+      "primary_foreground": "#FFFFFF",
+      "secondary": "#E8E8E6",
+      "secondary_foreground": "#1A3C34",
+      "accent": "#C66D5D",
+      "accent_foreground": "#FFFFFF",
+      "muted": "#F2F2F0",
+      "muted_foreground": "#5A5A5A",
+      "border": "#E2E2E0",
+      "card": "#FFFFFF",
+      "card_foreground": "#1A1A1A"
+    },
+    "tailwind_config_extension": {
+      "colors": {
+        "brand": {
+          "dark": "#1A3C34",
+          "light": "#F9F9F7",
+          "accent": "#C66D5D",
+          "stone": "#E8E8E6"
+        }
+      }
+    }
+  },
+  "layout": {
+    "spacing_scale": "Generous. Use p-8, p-12, p-16 for sections. Gap-8 for grids.",
+    "container_width": "max-w-7xl mx-auto px-6 md:px-12",
+    "grid_strategy": "Bento Grid for features, Split Screen for Hero",
+    "border_radius": "rounded-xl"
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-[#1A3C34] text-white hover:bg-[#142F29] rounded-full px-8 py-6 text-lg font-medium transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5",
+      "secondary": "bg-[#E8E8E6] text-[#1A3C34] hover:bg-[#DQDQDC] rounded-full px-8 py-6 text-lg font-medium transition-all"
+    },
+    "cards": {
+      "style": "bg-white border border-[#E2E2E0] rounded-xl p-8 shadow-sm hover:shadow-md transition-all duration-300",
+      "hover_effect": "hover:border-[#1A3C34]/20"
+    },
+    "inputs": {
+      "style": "bg-white border-[#E2E2E0] focus:ring-[#1A3C34] focus:border-[#1A3C34] rounded-lg h-12"
+    }
+  },
+  "visual_enhancers": {
+    "textures": "Subtle noise overlay on background (opacity 0.02)",
+    "shadows": "Soft, diffuse shadows. shadow-[0_8px_30px_rgb(0,0,0,0.04)]",
+    "glassmorphism": "Use sparingly for sticky nav: bg-[#F9F9F7]/80 backdrop-blur-md border-b border-[#E2E2E0]"
+  },
+  "images": {
+    "hero_image": {
+      "url": "https://images.unsplash.com/photo-1746682975155-ae1cce0853a3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHwxfHxjb3VwbGUlMjBtb3ZpbmclMjBpbnRvJTIwYXBhcnRtZW50JTIwa2V5c3xlbnwwfHx8fDE3NzAzMDgwNjV8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "Hand holding keys to new apartment",
+      "placement": "Hero Section Right Side"
+    },
+    "feature_image": {
+      "url": "https://images.unsplash.com/photo-1757262798620-c2cc40cfb440?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzZ8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBzY2FuZGluYXZpYW4lMjBsaXZpbmclMjByb29tJTIwaW50ZXJpb3IlMjBicmlnaHR8ZW58MHx8fHwxNzcwMzA4MDcwfDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Modern Scandinavian Living Room",
+      "placement": "Features Section or Trust Section Background"
+    }
+  },
+  "icons": {
+    "library": "lucide-react",
+    "style": "Stroke width 1.5px, color #1A3C34"
+  },
+  "instructions_to_main_agent": [
+    "Implement the 'Light Mode' theme strictly. Do not use dark mode defaults.",
+    "Use 'Playfair Display' for all H1, H2, H3 headings. Use 'Manrope' for body text.",
+    "For BankID and Swish logos: If actual SVGs are not available, use a clean text representation in a pill container (e.g., 'BankID' in bold font inside a bordered div) or use a generic 'ShieldCheck' icon from Lucide for BankID and 'Smartphone' for Swish.",
+    "The 'How it works' section should use a horizontal timeline layout on desktop and vertical on mobile.",
+    "Ensure the 'Create Agreement' CTA is prominent and uses the primary deep green color.",
+    "Add a subtle grain texture to the main background if possible using CSS.",
+    "Do not use generic 'lorem ipsum'. Use Swedish copy provided in the prompt or realistic placeholders.",
+    "Use 'sonner' for toast notifications.",
+    "Ensure all interactive elements have data-testid attributes."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file. This disrupts the human natural reading flow of text",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
+    "Prioritize using pre-existing components from src/components/ui when applicable",
+    "Create new components that match the style and conventions of existing components when needed",
+    "Examine existing components to understand the project's component patterns before creating new ones",
+    "Components MUST use named exports (export const ComponentName = ...)",
+    "Pages MUST use default exports (export default function PageName() {...})",
+    "Use 'sonner' for toasts",
+    "Sonner component are located in /app/src/components/ui/sonner.tsx"
+  ]
+}
