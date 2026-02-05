@@ -1,79 +1,68 @@
-# Securebooking Landing Page & Form - PRD
+# Securebooking - Komplett Demo PRD
 
 ## Original Problem Statement
-1. Redesign the Securebooking landing page (https://effervescent-salamander-d886e3.netlify.app/)
-2. Create agreement form page (/form) in the same style, connected to the index
+1. Redesign the Securebooking landing page
+2. Create agreement form page (/form) in the same style
+3. Implement complete demo with MOCKED BankID, Swish, and PDF generation
 
 ## User Choices
-- Design: "Snygg och rätt i tiden" (nice and modern/trendy)
-- Style: Scandinavian minimalism with trust/authority feel
-
-## Target Audience
-- Swedish property owners (hyresvärdar)
-- Tenants (hyresgäster) needing legally binding digital rental agreements
-
-## Core Requirements (Static)
-- Modern, professional landing page design
-- Trust indicators (BankID, Swish integration branding)
-- Clear 4-step process explanation
-- Multi-step rental agreement form
-- Mobile-responsive design
-- Swedish language content
+- Design: "Snygg och rätt i tiden" (modern Scandinavian)
+- Integrations: MOCKED demo for pitch/presentation purposes
 
 ## What's Been Implemented (2025-02-05)
 
-### Landing Page
-- [x] Navigation - Sticky glassmorphism nav with logo, links, CTA
-- [x] Mobile menu with toggle functionality
-- [x] Hero section with trust badges, stats, floating card
-- [x] "Så här fungerar det" - 4-step process
-- [x] Benefits section with image and benefit cards
-- [x] FAQ accordion with 5 questions
-- [x] CTA section with dark green background
-- [x] Footer with logo, links, trust badges
-- [x] All CTA buttons linked to /form
+### Landing Page ✓
+- Glassmorphism navigation
+- Hero section with trust badges, stats
+- "Så här fungerar det" 4-step process
+- Benefits section with image
+- FAQ accordion
+- CTA section and footer
 
-### Agreement Form Page (/form)
-- [x] 4-step progress indicator (Parter, Objekt, Villkor, Bekräfta)
-- [x] Step 1: Hyresvärd (landlord) & Hyresgäst (tenant) sections
-- [x] Step 2: Hyresobjekt (property) & Hyresperiod (rental period)
-- [x] Step 3: Hyra & betalning, Säkerhet, Övrigt
-- [x] Step 4: Summary, Avtalsvillkor accordion, Terms checkbox
-- [x] Step navigation (Next/Back/Cancel)
-- [x] Form state management with React useState
-- [x] Submit button disabled until terms accepted
-- [x] Same design system as landing page
+### Agreement Form (/form) ✓
+- 4-step multi-step form (Parter, Objekt, Villkor, Bekräfta)
+- Form validation and state management
+- Terms acceptance with expandable legal text
 
-### Design System
-- Typography: Playfair Display (headings) + Manrope (body)
-- Colors: Deep Forest Green (#1A3C34), Terracotta (#C66D5D), Warm Stone (#F9F9F7)
-- Grain texture overlay, glassmorphism navigation
-- Hover animations, card elevations
+### Backend API ✓
+- POST /api/agreements - Create agreement
+- GET /api/agreements/:id - Get agreement
+- GET /api/agreements - List all agreements
+- POST /api/agreements/:id/bankid/start - Start MOCK BankID
+- GET /api/agreements/:id/bankid/status/:ref - Check BankID status
+- POST /api/agreements/:id/swish/start - Start MOCK Swish
+- GET /api/agreements/:id/swish/status/:ref - Check Swish status
+- GET /api/agreements/:id/pdf - Generate and download PDF
+
+### Signing Flow (/sign/:id) ✓
+- Status tracking (pending_tenant, pending_landlord, pending_payment, completed)
+- Progress indicator with 4 steps
+- MOCK BankID signing component (auto-completes after ~6 sec)
+- MOCK Swish payment component (auto-completes after ~6 sec)
+- Completion view with PDF download
+
+### PDF Generation ✓
+- Full agreement details
+- Landlord and tenant information
+- Property details
+- Payment terms
+- Digital signature timestamps
+- Legal terms
+
+## IMPORTANT: MOCKED Integrations
+⚠️ **BankID and Swish are MOCKED for demo purposes**
+- Real integration requires official certificates from Swedish banks
+- Mock auto-completes after 2 status checks (~6 seconds)
+- Perfect for pitch/demo presentations
 
 ## Tech Stack
-- React 19, React Router DOM
-- Tailwind CSS 3.4
-- Lucide React icons
+- Frontend: React 19, Tailwind CSS, Lucide React
+- Backend: FastAPI, MongoDB, ReportLab (PDF)
+- Design: Playfair Display + Manrope fonts
 
-## Prioritized Backlog
-### P0 (Critical - Complete)
-- Landing page redesign ✓
-- Agreement form page ✓
-
-### P1 (High Priority)
-- BankID authentication integration
-- Swish payment integration
-- Backend API for storing agreements
-- PDF generation for signed agreements
-
-### P2 (Medium Priority)
-- Form validation with error messages
-- Pricing section on landing page
-- Testimonials section
-- Multi-language support
-
-## Next Tasks
-1. Add BankID authentication integration
-2. Add Swish payment integration
-3. Create backend API for agreements
-4. Implement PDF generation
+## For Production
+To make this production-ready, you would need:
+1. BankID certificate from a Swedish bank
+2. Swish merchant agreement
+3. Real Swedish company registration
+4. SSL certificates and security audit
