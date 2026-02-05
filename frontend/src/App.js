@@ -49,10 +49,10 @@ const Navigation = () => {
             <a href="#faq" className="link-hover font-medium" data-testid="nav-faq">
               FAQ
             </a>
-            <button className="btn-primary flex items-center gap-2" data-testid="nav-cta-button">
+            <Link to="/form" className="btn-primary flex items-center gap-2" data-testid="nav-cta-button">
               Skapa avtal
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
