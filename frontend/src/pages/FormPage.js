@@ -232,6 +232,7 @@ const Step2Property = ({ formData, handleChange, errors }) => {
               label="Adress" required name="propertyAddress"
               value={formData.propertyAddress} onChange={handleChange}
               placeholder="Bostadens gatuadress" testId="input-property-address"
+              error={errors.propertyAddress}
             />
           </div>
           <InputField 
@@ -271,11 +272,13 @@ const Step2Property = ({ formData, handleChange, errors }) => {
             label="Från" required type="date" name="periodFrom"
             value={formData.periodFrom} onChange={handleChange}
             testId="input-period-from"
+            error={errors.periodFrom}
           />
           <InputField 
             label="Till" required type="date" name="periodTo"
             value={formData.periodTo} onChange={handleChange}
             testId="input-period-to"
+            error={errors.periodTo}
           />
           <InputField 
             label="Max antal personer" type="number" name="personCount"
