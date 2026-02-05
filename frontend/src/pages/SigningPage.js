@@ -443,6 +443,7 @@ const SigningPage = () => {
       case "pending_tenant_signature":
         return (
           <BankIDSigning 
+            key={`bankid-tenant-${agreement.id}`}
             agreement={agreement} 
             signerType="tenant" 
             onComplete={handleSigningComplete}
@@ -451,6 +452,7 @@ const SigningPage = () => {
       case "pending_landlord_signature":
         return (
           <BankIDSigning 
+            key={`bankid-landlord-${agreement.id}`}
             agreement={agreement} 
             signerType="landlord" 
             onComplete={handleSigningComplete}
@@ -459,6 +461,7 @@ const SigningPage = () => {
       case "pending_payment":
         return (
           <SwishPayment 
+            key={`swish-${agreement.id}`}
             agreement={agreement} 
             onComplete={handlePaymentComplete}
           />
