@@ -542,6 +542,7 @@ function App() {
           <Route path="/form" element={<FormPage />} />
           <Route path="/sign/:agreementId" element={<SigningPage />} />
           <Route path="/tenant/:agreementId" element={<TenantPage />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Routes>
       </BrowserRouter>
     </div>
