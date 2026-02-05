@@ -168,7 +168,7 @@ const SectionCard = ({ icon: Icon, title, children, testId }) => {
 };
 
 // Step 1: Landlord Info
-const Step1LandlordInfo = ({ formData, handleChange }) => {
+const Step1LandlordInfo = ({ formData, handleChange, errors }) => {
   return (
     <div className="space-y-8 animate-fade-in-up">
       <SectionCard icon={User} title="Dina uppgifter (Hyresvärd)" testId="section-landlord">
@@ -177,17 +177,20 @@ const Step1LandlordInfo = ({ formData, handleChange }) => {
             label="Namn" required name="landlordName" 
             value={formData.landlordName} onChange={handleChange}
             placeholder="För- och efternamn" testId="input-landlord-name"
+            error={errors.landlordName}
           />
           <InputField 
             label="Personnummer" required name="landlordPersonnummer"
             value={formData.landlordPersonnummer} onChange={handleChange}
             placeholder="ÅÅÅÅMMDD-XXXX" testId="input-landlord-personnummer"
+            error={errors.landlordPersonnummer}
           />
           <div className="md:col-span-2">
             <InputField 
               label="Adress" required name="landlordAddress"
               value={formData.landlordAddress} onChange={handleChange}
               placeholder="Gatuadress" testId="input-landlord-address"
+              error={errors.landlordAddress}
             />
           </div>
           <InputField 
@@ -204,11 +207,13 @@ const Step1LandlordInfo = ({ formData, handleChange }) => {
             label="E-post" required type="email" name="landlordEmail"
             value={formData.landlordEmail} onChange={handleChange}
             placeholder="din@email.se" testId="input-landlord-email"
+            error={errors.landlordEmail}
           />
           <InputField 
-            label="Telefon" type="tel" name="landlordPhone"
+            label="Telefon" required type="tel" name="landlordPhone"
             value={formData.landlordPhone} onChange={handleChange}
             placeholder="07X XXX XX XX" testId="input-landlord-phone"
+            error={errors.landlordPhone}
           />
         </div>
       </SectionCard>
@@ -217,7 +222,7 @@ const Step1LandlordInfo = ({ formData, handleChange }) => {
 };
 
 // Step 2: Property Info
-const Step2Property = ({ formData, handleChange }) => {
+const Step2Property = ({ formData, handleChange, errors }) => {
   return (
     <div className="space-y-8 animate-fade-in-up">
       <SectionCard icon={Home} title="Hyresobjekt" testId="section-property">
