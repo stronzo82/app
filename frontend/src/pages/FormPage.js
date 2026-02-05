@@ -292,7 +292,7 @@ const Step2Property = ({ formData, handleChange, errors }) => {
 };
 
 // Step 3: Terms
-const Step3Terms = ({ formData, handleChange }) => {
+const Step3Terms = ({ formData, handleChange, errors }) => {
   return (
     <div className="space-y-8 animate-fade-in-up">
       <SectionCard icon={CreditCard} title="Hyra & betalning" testId="section-payment">
@@ -301,11 +301,13 @@ const Step3Terms = ({ formData, handleChange }) => {
             label="Hyresbelopp (SEK)" required type="number" name="rentAmount"
             value={formData.rentAmount} onChange={handleChange}
             placeholder="0" testId="input-rent-amount"
+            error={errors.rentAmount}
           />
           <SelectField 
             label="Betalningssätt" required name="paymentMethod"
             value={formData.paymentMethod} onChange={handleChange}
             testId="select-payment-method"
+            error={errors.paymentMethod}
             options={[
               { value: "", label: "Välj betalningssätt" },
               { value: "bank", label: "Banköverföring" },
