@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import {
   ShieldCheck,
   Smartphone,
@@ -18,6 +18,7 @@ import {
   Star,
   BadgeCheck,
 } from "lucide-react";
+import FormPage from "@/pages/FormPage";
 
 // Navigation Component
 const Navigation = () => {
