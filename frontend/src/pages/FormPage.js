@@ -364,7 +364,7 @@ const Step3Terms = ({ formData, handleChange, errors }) => {
 };
 
 // Step 4: Send to Tenant
-const Step4Send = ({ formData, handleChange }) => {
+const Step4Send = ({ formData, handleChange, errors }) => {
   return (
     <div className="space-y-8 animate-fade-in-up">
       <SectionCard icon={Mail} title="Skicka till hyresgäst" testId="section-send">
@@ -379,6 +379,7 @@ const Step4Send = ({ formData, handleChange }) => {
             label="Hyresgästens e-post" required type="email" name="tenantEmail"
             value={formData.tenantEmail} onChange={handleChange}
             placeholder="hyresgast@email.se" testId="input-tenant-email"
+            error={errors.tenantEmail}
           />
 
           <div className="bg-[#1A3C34]/5 p-6 rounded-xl">
