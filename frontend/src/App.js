@@ -453,9 +453,9 @@ const Footer = () => {
             <h4 className="font-semibold text-[#1A3C34] mb-4">Tjänster</h4>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-[#5A5A5A] hover:text-[#1A3C34] transition-colors" data-testid="footer-link-create">
+                <Link to="/form" className="text-[#5A5A5A] hover:text-[#1A3C34] transition-colors" data-testid="footer-link-create">
                   Skapa avtal
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="#hur-det-fungerar" className="text-[#5A5A5A] hover:text-[#1A3C34] transition-colors" data-testid="footer-link-how">
