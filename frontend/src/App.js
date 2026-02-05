@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import FormPage from "@/pages/FormPage";
 import SigningPage from "@/pages/SigningPage";
+import TenantPage from "@/pages/TenantPage";
 
 // Navigation Component
 const Navigation = () => {
