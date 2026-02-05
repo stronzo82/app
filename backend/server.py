@@ -371,8 +371,13 @@ async def create_agreement(data: AgreementCreate):
     doc = agreement.model_dump()
     await db.agreements.insert_one(doc)
     
-    # TODO: Send email to tenant with link
-    # For demo, we'll just return the agreement ID
+    # Send email notification to tenant
+    await notify_tenant_new_agreement(
+        tenant_email=data.tenant.email,
+        landlord_name=data.landlord.name,
+        property_address=data.property.address,
+        agreement_id=agreement.id
+    )
     
     return {"id": agreement.id, "status": agreement.status, "message": "Avtal skapat framgångsrikt"}
 
