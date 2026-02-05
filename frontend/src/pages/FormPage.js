@@ -109,7 +109,7 @@ const InputField = ({ label, required, type = "text", placeholder, value, onChan
 };
 
 // Select Field Component
-const SelectField = ({ label, required, options, value, onChange, name, testId }) => {
+const SelectField = ({ label, required, options, value, onChange, name, testId, error }) => {
   return (
     <div className="space-y-2">
       <label className="block text-sm font-medium text-[#1A3C34]">
@@ -119,7 +119,7 @@ const SelectField = ({ label, required, options, value, onChange, name, testId }
         name={name}
         value={value}
         onChange={onChange}
-        className="w-full h-12 px-4 bg-white border border-[#E2E2E0] rounded-lg text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#1A3C34] focus:border-transparent transition-all appearance-none cursor-pointer"
+        className={`w-full h-12 px-4 bg-white border rounded-lg text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#1A3C34] focus:border-transparent transition-all appearance-none cursor-pointer ${error ? 'border-red-500' : 'border-[#E2E2E0]'}`}
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%231A3C34' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', backgroundSize: '20px' }}
         data-testid={testId}
       >
@@ -127,6 +127,7 @@ const SelectField = ({ label, required, options, value, onChange, name, testId }
           <option key={opt.value} value={opt.value}>{opt.label}</option>
         ))}
       </select>
+      {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
   );
 };
