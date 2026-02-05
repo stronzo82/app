@@ -574,6 +574,7 @@ const FormPage = () => {
     specialTerms: "",
     comments: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -594,14 +595,69 @@ const FormPage = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!termsAccepted) {
       alert("Du måste godkänna avtalsvillkoren för att fortsätta.");
       return;
     }
-    // Here you would typically send data to backend
-    alert("Hyresavtal skapat! I en riktig implementation skulle nu BankID-signering påbörjas.");
-    navigate("/");
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Transform form data to API format
+      const agreementData = {
+        landlord: {
+          name: formData.landlordName,
+          personnummer: formData.landlordPersonnummer,
+          address: formData.landlordAddress,
+          postal_code: formData.landlordPostalCode,
+          city: formData.landlordCity,
+          email: formData.landlordEmail,
+          phone: formData.landlordPhone,
+        },
+        tenant: {
+          name: formData.tenantName,
+          personnummer: formData.tenantPersonnummer,
+          address: formData.tenantAddress,
+          postal_code: formData.tenantPostalCode,
+          city: formData.tenantCity,
+          email: formData.tenantEmail,
+          phone: formData.tenantPhone,
+        },
+        property: {
+          address: formData.propertyAddress,
+          postal_code: formData.propertyPostalCode,
+          city: formData.propertyCity,
+          property_type: formData.propertyType,
+          other_info: formData.propertyOther,
+        },
+        rental_period: {
+          from_date: formData.periodFrom,
+          to_date: formData.periodTo,
+          person_count: parseInt(formData.personCount) || 1,
+        },
+        payment: {
+          rent_amount: parseInt(formData.rentAmount) || 0,
+          payment_method: formData.paymentMethod,
+          security_type: formData.securityType,
+          security_amount: formData.securityAmount,
+        },
+        other: {
+          cleaning: formData.cleaning,
+          special_terms: formData.specialTerms,
+          comments: formData.comments,
+        }
+      };
+      
+      const response = await axios.post(`${API}/agreements`, agreementData);
+      
+      // Navigate to signing page
+      navigate(`/sign/${response.data.id}`);
+    } catch (error) {
+      console.error("Error creating agreement:", error);
+      alert("Kunde inte skapa avtalet. Försök igen.");
+      setIsSubmitting(false);
+    }
   };
 
   const renderStep = () => {
