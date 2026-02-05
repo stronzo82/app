@@ -551,6 +551,9 @@ async def check_swish_status(agreement_id: str, payment_ref: str):
     if check_count >= 2:  # Complete after 2 checks
         now = datetime.now(timezone.utc).isoformat()
         
+        # Get agreement for email notification
+        agreement = await db.agreements.find_one({"id": agreement_id}, {"_id": 0})
+        
         await db.agreements.update_one(
             {"id": agreement_id},
             {"$set": {
@@ -561,6 +564,17 @@ async def check_swish_status(agreement_id: str, payment_ref: str):
         )
         
         await db.swish_sessions.update_one({"payment_ref": payment_ref}, {"$set": {"status": "complete"}})
+        
+        # Send completion emails to both parties
+        if agreement:
+            await notify_both_agreement_completed(
+                landlord_email=agreement['landlord'].get('email', ''),
+                tenant_email=agreement['tenant'].get('email', ''),
+                landlord_name=agreement['landlord'].get('name', ''),
+                tenant_name=agreement['tenant'].get('name', ''),
+                property_address=agreement['property'].get('address', ''),
+                agreement_id=agreement_id
+            )
         
         return {
             "status": "complete",
