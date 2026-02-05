@@ -13,6 +13,9 @@ import {
   ChevronUp,
   Check,
   Loader2,
+  Mail,
+  Copy,
+  CheckCircle2,
 } from "lucide-react";
 import axios from "axios";
 
@@ -50,10 +53,10 @@ const FormNavigation = () => {
 // Progress Steps
 const ProgressSteps = ({ currentStep }) => {
   const steps = [
-    { num: 1, label: "Parter", icon: User },
-    { num: 2, label: "Objekt", icon: Home },
-    { num: 3, label: "Villkor", icon: FileText },
-    { num: 4, label: "Bekräfta", icon: Check },
+    { num: 1, label: "Dina uppgifter", icon: User },
+    { num: 2, label: "Bostad", icon: Home },
+    { num: 3, label: "Hyresvillkor", icon: FileText },
+    { num: 4, label: "Skicka", icon: Mail },
   ];
 
   return (
@@ -162,12 +165,11 @@ const SectionCard = ({ icon: Icon, title, children, testId }) => {
   );
 };
 
-// Step 1: Parter (Parties)
-const Step1Parties = ({ formData, handleChange }) => {
+// Step 1: Landlord Info
+const Step1LandlordInfo = ({ formData, handleChange }) => {
   return (
     <div className="space-y-8 animate-fade-in-up">
-      {/* Hyresvärd (Landlord) */}
-      <SectionCard icon={User} title="Hyresvärd" testId="section-landlord">
+      <SectionCard icon={User} title="Dina uppgifter (Hyresvärd)" testId="section-landlord">
         <div className="grid md:grid-cols-2 gap-6">
           <InputField 
             label="Namn" required name="landlordName" 
@@ -197,9 +199,9 @@ const Step1Parties = ({ formData, handleChange }) => {
             placeholder="Stad" testId="input-landlord-city"
           />
           <InputField 
-            label="E-post" type="email" name="landlordEmail"
+            label="E-post" required type="email" name="landlordEmail"
             value={formData.landlordEmail} onChange={handleChange}
-            placeholder="exempel@mail.se" testId="input-landlord-email"
+            placeholder="din@email.se" testId="input-landlord-email"
           />
           <InputField 
             label="Telefon" type="tel" name="landlordPhone"
@@ -208,58 +210,14 @@ const Step1Parties = ({ formData, handleChange }) => {
           />
         </div>
       </SectionCard>
-
-      {/* Hyresgäst (Tenant) */}
-      <SectionCard icon={User} title="Hyresgäst" testId="section-tenant">
-        <div className="grid md:grid-cols-2 gap-6">
-          <InputField 
-            label="Namn" required name="tenantName"
-            value={formData.tenantName} onChange={handleChange}
-            placeholder="För- och efternamn" testId="input-tenant-name"
-          />
-          <InputField 
-            label="Personnummer" required name="tenantPersonnummer"
-            value={formData.tenantPersonnummer} onChange={handleChange}
-            placeholder="ÅÅÅÅMMDD-XXXX" testId="input-tenant-personnummer"
-          />
-          <div className="md:col-span-2">
-            <InputField 
-              label="Adress" required name="tenantAddress"
-              value={formData.tenantAddress} onChange={handleChange}
-              placeholder="Gatuadress" testId="input-tenant-address"
-            />
-          </div>
-          <InputField 
-            label="Postnummer" name="tenantPostalCode"
-            value={formData.tenantPostalCode} onChange={handleChange}
-            placeholder="XXX XX" testId="input-tenant-postal"
-          />
-          <InputField 
-            label="Ort" name="tenantCity"
-            value={formData.tenantCity} onChange={handleChange}
-            placeholder="Stad" testId="input-tenant-city"
-          />
-          <InputField 
-            label="E-post" type="email" name="tenantEmail"
-            value={formData.tenantEmail} onChange={handleChange}
-            placeholder="exempel@mail.se" testId="input-tenant-email"
-          />
-          <InputField 
-            label="Telefon" type="tel" name="tenantPhone"
-            value={formData.tenantPhone} onChange={handleChange}
-            placeholder="07X XXX XX XX" testId="input-tenant-phone"
-          />
-        </div>
-      </SectionCard>
     </div>
   );
 };
 
-// Step 2: Hyresobjekt (Property)
+// Step 2: Property Info
 const Step2Property = ({ formData, handleChange }) => {
   return (
     <div className="space-y-8 animate-fade-in-up">
-      {/* Hyresobjekt */}
       <SectionCard icon={Home} title="Hyresobjekt" testId="section-property">
         <div className="grid md:grid-cols-2 gap-6">
           <div className="md:col-span-2">
@@ -300,7 +258,6 @@ const Step2Property = ({ formData, handleChange }) => {
         </div>
       </SectionCard>
 
-      {/* Hyresperiod */}
       <SectionCard icon={Calendar} title="Hyresperiod" testId="section-period">
         <div className="grid md:grid-cols-3 gap-6">
           <InputField 
@@ -314,7 +271,7 @@ const Step2Property = ({ formData, handleChange }) => {
             testId="input-period-to"
           />
           <InputField 
-            label="Antal personer" type="number" name="personCount"
+            label="Max antal personer" type="number" name="personCount"
             value={formData.personCount} onChange={handleChange}
             placeholder="1" testId="input-person-count"
           />
@@ -324,11 +281,10 @@ const Step2Property = ({ formData, handleChange }) => {
   );
 };
 
-// Step 3: Villkor (Terms)
+// Step 3: Terms
 const Step3Terms = ({ formData, handleChange }) => {
   return (
     <div className="space-y-8 animate-fade-in-up">
-      {/* Hyra & betalning */}
       <SectionCard icon={CreditCard} title="Hyra & betalning" testId="section-payment">
         <div className="grid md:grid-cols-2 gap-6">
           <InputField 
@@ -350,7 +306,6 @@ const Step3Terms = ({ formData, handleChange }) => {
         </div>
       </SectionCard>
 
-      {/* Säkerhet */}
       <SectionCard icon={ShieldCheck} title="Säkerhet" testId="section-security">
         <div className="grid md:grid-cols-2 gap-6">
           <SelectField 
@@ -372,7 +327,6 @@ const Step3Terms = ({ formData, handleChange }) => {
         </div>
       </SectionCard>
 
-      {/* Övrigt */}
       <SectionCard icon={FileText} title="Övrigt" testId="section-other">
         <div className="space-y-6">
           <SelectField 
@@ -389,11 +343,7 @@ const Step3Terms = ({ formData, handleChange }) => {
             label="Särskilda villkor" name="specialTerms"
             value={formData.specialTerms} onChange={handleChange}
             placeholder="Ange eventuella särskilda villkor..." testId="textarea-special-terms"
-          />
-          <TextareaField 
-            label="Kommentarer" name="comments"
-            value={formData.comments} onChange={handleChange}
-            placeholder="Övriga kommentarer..." testId="textarea-comments"
+            rows={3}
           />
         </div>
       </SectionCard>
@@ -401,130 +351,120 @@ const Step3Terms = ({ formData, handleChange }) => {
   );
 };
 
-// Step 4: Bekräfta (Confirm)
-const Step4Confirm = ({ formData, termsAccepted, setTermsAccepted }) => {
-  const [showTerms, setShowTerms] = useState(false);
-
-  const terms = [
-    {
-      title: "1. Säkerhet (deposition)",
-      content: "Hyresgästen ska till hyresvärden erlägga säkerhet i form av deposition som garanti för fullgörande av de förpliktelser som följer av detta hyresavtal. Säkerheten omfattar bland annat men inte uteslutande: förfallen och obetald hyra, ersättning för skador på bostad eller tillhörande inventarier utöver normalt slitage, kostnader hänförliga till bristande städning vid avflyttning, samt övriga ekonomiska anspråk grundade på avtalsbrott."
-    },
-    {
-      title: "2. Andrahandsuthyrning",
-      content: "Uthyrning i andra hand är inte tillåten utan hyresvärdens skriftliga godkännande."
-    },
-    {
-      title: "3. Avbokning",
-      content: "Hyreskontraktet kan hävas innan uppsägningsfristen, om parterna har kommit överens om det. Avbokningen ska ske skriftligen."
-    },
-    {
-      title: "4. Kontraktsbrott",
-      content: "Om hyresgästen eller någon annan väsentligt bryter mot avtalet kan hyresvärden säga upp hyresgästen. Hyresgästen måste då flytta ut från bostaden omgående."
-    },
-    {
-      title: "5. Städning",
-      content: "Hyresgästen ansvarar för att bostaden är väl städad vid avflyttning. Om städning inte sker kan hyresvärden ta ut skälig ersättning för detta."
-    },
-    {
-      title: "6. Skador",
-      content: "Hyresgästen ansvarar för skador som uppkommer genom oaktsamhet eller vårdslöshet under hyresperioden."
-    },
-    {
-      title: "7. Tillämplig lag",
-      content: "Detta avtal regleras enligt svensk lag. Tvister som inte kan lösas genom överenskommelse mellan parterna kan prövas av svensk domstol."
-    }
-  ];
-
+// Step 4: Send to Tenant
+const Step4Send = ({ formData, handleChange }) => {
   return (
     <div className="space-y-8 animate-fade-in-up">
-      {/* Summary */}
-      <SectionCard icon={FileText} title="Sammanfattning" testId="section-summary">
+      <SectionCard icon={Mail} title="Skicka till hyresgäst" testId="section-send">
         <div className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-[#F9F9F7] p-4 rounded-lg">
-              <p className="text-sm text-[#5A5A5A] mb-1">Hyresvärd</p>
-              <p className="font-medium text-[#1A3C34]">{formData.landlordName || "Ej ifyllt"}</p>
-              <p className="text-sm text-[#5A5A5A]">{formData.landlordEmail}</p>
-            </div>
-            <div className="bg-[#F9F9F7] p-4 rounded-lg">
-              <p className="text-sm text-[#5A5A5A] mb-1">Hyresgäst</p>
-              <p className="font-medium text-[#1A3C34]">{formData.tenantName || "Ej ifyllt"}</p>
-              <p className="text-sm text-[#5A5A5A]">{formData.tenantEmail}</p>
-            </div>
-          </div>
           <div className="bg-[#F9F9F7] p-4 rounded-lg">
-            <p className="text-sm text-[#5A5A5A] mb-1">Hyresobjekt</p>
-            <p className="font-medium text-[#1A3C34]">{formData.propertyAddress || "Ej ifyllt"}</p>
-            <p className="text-sm text-[#5A5A5A]">
-              {formData.propertyPostalCode} {formData.propertyCity}
+            <p className="text-sm text-[#5A5A5A] mb-2">
+              Ange hyresgästens e-postadress. De kommer få en länk där de kan fylla i sina uppgifter och signera avtalet med BankID.
             </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-[#F9F9F7] p-4 rounded-lg">
-              <p className="text-sm text-[#5A5A5A] mb-1">Period</p>
-              <p className="font-medium text-[#1A3C34]">
-                {formData.periodFrom || "—"} till {formData.periodTo || "—"}
-              </p>
-            </div>
-            <div className="bg-[#F9F9F7] p-4 rounded-lg">
-              <p className="text-sm text-[#5A5A5A] mb-1">Hyresbelopp</p>
-              <p className="font-medium text-[#1A3C34]">
-                {formData.rentAmount ? `${formData.rentAmount} SEK` : "Ej ifyllt"}
-              </p>
-            </div>
-            <div className="bg-[#F9F9F7] p-4 rounded-lg">
-              <p className="text-sm text-[#5A5A5A] mb-1">Betalningssätt</p>
-              <p className="font-medium text-[#1A3C34]">
-                {formData.paymentMethod === 'bank' ? 'Banköverföring' : 
-                 formData.paymentMethod === 'swish' ? 'Swish' : 
-                 formData.paymentMethod === 'annat' ? 'Annat' : 'Ej valt'}
-              </p>
+          
+          <InputField 
+            label="Hyresgästens e-post" required type="email" name="tenantEmail"
+            value={formData.tenantEmail} onChange={handleChange}
+            placeholder="hyresgast@email.se" testId="input-tenant-email"
+          />
+
+          <div className="bg-[#1A3C34]/5 p-6 rounded-xl">
+            <h4 className="font-semibold text-[#1A3C34] mb-4">Sammanfattning</h4>
+            <div className="grid md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="text-[#5A5A5A]">Hyresobjekt</p>
+                <p className="font-medium text-[#1A3C34]">{formData.propertyAddress || "—"}</p>
+              </div>
+              <div>
+                <p className="text-[#5A5A5A]">Period</p>
+                <p className="font-medium text-[#1A3C34]">{formData.periodFrom || "—"} till {formData.periodTo || "—"}</p>
+              </div>
+              <div>
+                <p className="text-[#5A5A5A]">Hyresbelopp</p>
+                <p className="font-medium text-[#1A3C34]">{formData.rentAmount ? `${formData.rentAmount} SEK` : "—"}</p>
+              </div>
+              <div>
+                <p className="text-[#5A5A5A]">Tjänsteavgift</p>
+                <p className="font-medium text-[#1A3C34]">100 SEK (betalas vid signering)</p>
+              </div>
             </div>
           </div>
         </div>
       </SectionCard>
+    </div>
+  );
+};
 
-      {/* Terms */}
-      <div className="card-elevated" data-testid="section-terms">
-        <button 
-          className="w-full flex items-center justify-between"
-          onClick={() => setShowTerms(!showTerms)}
-          data-testid="toggle-terms"
-        >
-          <div className="flex items-center gap-3">
-            <div className="icon-container">
-              <FileText className="w-5 h-5" strokeWidth={1.5} />
+// Success Modal
+const SuccessModal = ({ agreementId, tenantEmail, onClose }) => {
+  const [copied, setCopied] = useState(false);
+  const agreementLink = `${window.location.origin}/tenant/${agreementId}`;
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(agreementLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" data-testid="success-modal">
+      <div className="bg-white rounded-2xl max-w-lg w-full p-8 animate-fade-in-up">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle2 className="w-8 h-8 text-green-600" />
+          </div>
+          
+          <h2 className="text-2xl mb-2" style={{ fontFamily: 'Playfair Display' }}>
+            Avtal skapat!
+          </h2>
+          <p className="text-[#5A5A5A] mb-6">
+            En inbjudan har skickats till <strong>{tenantEmail}</strong>
+          </p>
+
+          <div className="bg-[#F9F9F7] p-4 rounded-lg mb-6">
+            <p className="text-sm text-[#5A5A5A] mb-2">Länk till avtalet:</p>
+            <div className="flex items-center gap-2">
+              <input 
+                type="text" 
+                value={agreementLink} 
+                readOnly 
+                className="flex-1 h-10 px-3 bg-white border border-[#E2E2E0] rounded-lg text-sm"
+              />
+              <button 
+                onClick={copyLink}
+                className="h-10 px-4 bg-[#1A3C34] text-white rounded-lg flex items-center gap-2 hover:bg-[#142F29] transition-colors"
+                data-testid="copy-link-btn"
+              >
+                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                {copied ? "Kopierad!" : "Kopiera"}
+              </button>
             </div>
-            <h3 className="text-xl" style={{ fontFamily: 'Playfair Display' }}>Avtalsvillkor</h3>
           </div>
-          {showTerms ? <ChevronUp className="w-5 h-5 text-[#1A3C34]" /> : <ChevronDown className="w-5 h-5 text-[#1A3C34]" />}
-        </button>
-        
-        {showTerms && (
-          <div className="mt-6 space-y-4 max-h-80 overflow-y-auto pr-2" data-testid="terms-content">
-            {terms.map((term, index) => (
-              <div key={index} className="border-b border-[#E2E2E0] pb-4 last:border-0">
-                <h4 className="font-semibold text-[#1A3C34] mb-2">{term.title}</h4>
-                <p className="text-sm text-[#5A5A5A] leading-relaxed">{term.content}</p>
-              </div>
-            ))}
+
+          <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg mb-6 text-left">
+            <p className="text-sm text-yellow-800">
+              <strong>Nästa steg:</strong> Hyresgästen fyller i sina uppgifter och signerar med BankID. 
+              Du får ett e-postmeddelande när det är din tur att granska och signera.
+            </p>
           </div>
-        )}
-        
-        <div className="mt-6 pt-6 border-t border-[#E2E2E0]">
-          <label className="flex items-start gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={termsAccepted}
-              onChange={(e) => setTermsAccepted(e.target.checked)}
-              className="mt-1 w-5 h-5 rounded border-[#E2E2E0] text-[#1A3C34] focus:ring-[#1A3C34]"
-              data-testid="checkbox-accept-terms"
-            />
-            <span className="text-[#1A3C34] font-medium">
-              Jag har läst och godkänner avtalsvillkoren
-            </span>
-          </label>
+
+          <div className="flex gap-4">
+            <Link 
+              to="/" 
+              className="flex-1 btn-secondary text-center"
+              data-testid="back-home-btn"
+            >
+              Till startsidan
+            </Link>
+            <Link 
+              to={`/sign/${agreementId}`}
+              className="flex-1 btn-primary text-center"
+              data-testid="view-agreement-btn"
+            >
+              Visa avtal
+            </Link>
+          </div>
         </div>
       </div>
     </div>
@@ -535,7 +475,9 @@ const Step4Confirm = ({ formData, termsAccepted, setTermsAccepted }) => {
 const FormPage = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [createdAgreementId, setCreatedAgreementId] = useState(null);
   const [formData, setFormData] = useState({
     // Landlord
     landlordName: "",
@@ -545,14 +487,6 @@ const FormPage = () => {
     landlordPersonnummer: "",
     landlordEmail: "",
     landlordPhone: "",
-    // Tenant
-    tenantName: "",
-    tenantAddress: "",
-    tenantPostalCode: "",
-    tenantCity: "",
-    tenantPersonnummer: "",
-    tenantEmail: "",
-    tenantPhone: "",
     // Property
     propertyAddress: "",
     propertyPostalCode: "",
@@ -572,9 +506,9 @@ const FormPage = () => {
     // Other
     cleaning: "",
     specialTerms: "",
-    comments: "",
+    // Tenant (only email for now)
+    tenantEmail: "",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -596,15 +530,14 @@ const FormPage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!termsAccepted) {
-      alert("Du måste godkänna avtalsvillkoren för att fortsätta.");
+    if (!formData.tenantEmail) {
+      alert("Du måste ange hyresgästens e-postadress.");
       return;
     }
     
     setIsSubmitting(true);
     
     try {
-      // Transform form data to API format
       const agreementData = {
         landlord: {
           name: formData.landlordName,
@@ -616,13 +549,7 @@ const FormPage = () => {
           phone: formData.landlordPhone,
         },
         tenant: {
-          name: formData.tenantName,
-          personnummer: formData.tenantPersonnummer,
-          address: formData.tenantAddress,
-          postal_code: formData.tenantPostalCode,
-          city: formData.tenantCity,
           email: formData.tenantEmail,
-          phone: formData.tenantPhone,
         },
         property: {
           address: formData.propertyAddress,
@@ -645,17 +572,16 @@ const FormPage = () => {
         other: {
           cleaning: formData.cleaning,
           special_terms: formData.specialTerms,
-          comments: formData.comments,
         }
       };
       
       const response = await axios.post(`${API}/agreements`, agreementData);
-      
-      // Navigate to signing page
-      navigate(`/sign/${response.data.id}`);
+      setCreatedAgreementId(response.data.id);
+      setShowSuccess(true);
     } catch (error) {
       console.error("Error creating agreement:", error);
       alert("Kunde inte skapa avtalet. Försök igen.");
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -663,13 +589,13 @@ const FormPage = () => {
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return <Step1Parties formData={formData} handleChange={handleChange} />;
+        return <Step1LandlordInfo formData={formData} handleChange={handleChange} />;
       case 2:
         return <Step2Property formData={formData} handleChange={handleChange} />;
       case 3:
         return <Step3Terms formData={formData} handleChange={handleChange} />;
       case 4:
-        return <Step4Confirm formData={formData} termsAccepted={termsAccepted} setTermsAccepted={setTermsAccepted} />;
+        return <Step4Send formData={formData} handleChange={handleChange} />;
       default:
         return null;
     }
@@ -684,10 +610,10 @@ const FormPage = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl mb-3" data-testid="form-title">
-              Hyresavtal formulär
+              Skapa hyresavtal
             </h1>
             <p className="text-[#5A5A5A]" data-testid="form-subtitle">
-              Fyll i uppgifterna nedan för att skapa ditt hyresavtal
+              Fyll i uppgifterna och skicka avtalet till hyresgästen för signering
             </p>
           </div>
 
@@ -730,8 +656,8 @@ const FormPage = () => {
             ) : (
               <button
                 onClick={handleSubmit}
-                className={`btn-primary flex items-center gap-2 ${(!termsAccepted || isSubmitting) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={!termsAccepted || isSubmitting}
+                className={`btn-primary flex items-center gap-2 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={isSubmitting}
                 data-testid="btn-submit"
               >
                 {isSubmitting ? (
@@ -741,8 +667,8 @@ const FormPage = () => {
                   </>
                 ) : (
                   <>
-                    Skapa hyresavtal
-                    <ArrowRight className="w-4 h-4" />
+                    <Mail className="w-4 h-4" />
+                    Skicka till hyresgäst
                   </>
                 )}
               </button>
@@ -750,6 +676,15 @@ const FormPage = () => {
           </div>
         </div>
       </main>
+
+      {/* Success Modal */}
+      {showSuccess && (
+        <SuccessModal 
+          agreementId={createdAgreementId}
+          tenantEmail={formData.tenantEmail}
+          onClose={() => setShowSuccess(false)}
+        />
+      )}
     </div>
   );
 };
