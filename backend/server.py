@@ -96,16 +96,25 @@ class OtherInfo(BaseModel):
 
 class AgreementCreate(BaseModel):
     landlord: PersonInfo
-    tenant: PersonInfo
+    tenant: TenantInfo  # Only email initially
     property: PropertyInfo
     rental_period: RentalPeriod
     payment: PaymentInfo
     other: Optional[OtherInfo] = None
 
+class TenantUpdateRequest(BaseModel):
+    name: str
+    personnummer: str
+    address: str
+    postal_code: Optional[str] = ""
+    city: Optional[str] = ""
+    phone: Optional[str] = ""
+    email: Optional[str] = ""
+
 class Agreement(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     landlord: PersonInfo
-    tenant: PersonInfo
+    tenant: dict  # Flexible to support partial data
     property: PropertyInfo
     rental_period: RentalPeriod
     payment: PaymentInfo
