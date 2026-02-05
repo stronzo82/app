@@ -78,10 +78,10 @@ const Navigation = () => {
               <a href="#faq" className="font-medium text-[#1A3C34] py-2">
                 FAQ
               </a>
-              <button className="btn-primary w-full flex items-center justify-center gap-2">
+              <Link to="/form" className="btn-primary w-full flex items-center justify-center gap-2">
                 Skapa avtal
                 <ArrowRight className="w-4 h-4" />
-              </button>
+              </Link>
             </div>
           </div>
         )}
