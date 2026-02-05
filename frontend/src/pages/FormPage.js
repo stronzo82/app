@@ -670,13 +670,13 @@ const FormPage = () => {
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return <Step1LandlordInfo formData={formData} handleChange={handleChange} />;
+        return <Step1LandlordInfo formData={formData} handleChange={handleChange} errors={errors} />;
       case 2:
-        return <Step2Property formData={formData} handleChange={handleChange} />;
+        return <Step2Property formData={formData} handleChange={handleChange} errors={errors} />;
       case 3:
-        return <Step3Terms formData={formData} handleChange={handleChange} />;
+        return <Step3Terms formData={formData} handleChange={handleChange} errors={errors} />;
       case 4:
-        return <Step4Send formData={formData} handleChange={handleChange} />;
+        return <Step4Send formData={formData} handleChange={handleChange} errors={errors} />;
       default:
         return null;
     }
