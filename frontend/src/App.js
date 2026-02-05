@@ -402,14 +402,15 @@ const CTASection = () => {
           <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto" data-testid="cta-subtitle">
             Kom igång på bara några minuter. Säkert, enkelt och juridiskt bindande.
           </p>
-          <button
+          <Link
+            to="/form"
             className="bg-white text-[#1A3C34] px-8 py-4 rounded-full font-medium text-lg inline-flex items-center gap-2 shadow-lg hover:shadow-xl transition-shadow"
             style={{ transition: 'box-shadow 0.2s ease' }}
             data-testid="cta-button"
           >
             Skapa hyresavtal nu
             <ArrowRight className="w-5 h-5" />
-          </button>
+          </Link>
           <div className="flex items-center justify-center gap-6 mt-8">
             <span className="text-white/60 text-sm flex items-center gap-2" data-testid="cta-trust-1">
               <ShieldCheck className="w-4 h-4" strokeWidth={1.5} />
