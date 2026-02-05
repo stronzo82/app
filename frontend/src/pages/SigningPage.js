@@ -597,6 +597,7 @@ const SigningPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [step, setStep] = useState("loading"); // loading, waiting, review, sign, payment, complete
+  const [manualStep, setManualStep] = useState(null); // Track manual step changes
 
   const fetchAgreement = useCallback(async () => {
     try {
@@ -604,22 +605,24 @@ const SigningPage = () => {
       const data = response.data;
       setAgreement(data);
       
-      // Determine current step based on status
-      switch (data.status) {
-        case "pending_tenant_signature":
-          setStep("waiting");
-          break;
-        case "pending_landlord_signature":
-          setStep("review");
-          break;
-        case "pending_payment":
-          setStep("payment");
-          break;
-        case "completed":
-          setStep("complete");
-          break;
-        default:
-          setStep("waiting");
+      // Only update step if not manually overridden
+      if (!manualStep) {
+        switch (data.status) {
+          case "pending_tenant_signature":
+            setStep("waiting");
+            break;
+          case "pending_landlord_signature":
+            setStep("review");
+            break;
+          case "pending_payment":
+            setStep("payment");
+            break;
+          case "completed":
+            setStep("complete");
+            break;
+          default:
+            setStep("waiting");
+        }
       }
       
       setLoading(false);
@@ -627,7 +630,7 @@ const SigningPage = () => {
       setError("Kunde inte hämta avtalet");
       setLoading(false);
     }
-  }, [agreementId]);
+  }, [agreementId, manualStep]);
 
   useEffect(() => {
     fetchAgreement();
@@ -643,14 +646,17 @@ const SigningPage = () => {
   }, [fetchAgreement, step]);
 
   const handleReviewComplete = () => {
+    setManualStep("sign");
     setStep("sign");
   };
 
   const handleSigningComplete = () => {
+    setManualStep(null); // Clear manual override
     fetchAgreement();
   };
 
   const handlePaymentComplete = () => {
+    setManualStep(null);
     fetchAgreement();
   };
 
