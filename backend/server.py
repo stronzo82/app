@@ -280,6 +280,36 @@ async def list_agreements():
     agreements = await db.agreements.find({}, {"_id": 0}).to_list(100)
     return agreements
 
+# Update Tenant Info
+@api_router.put("/agreements/{agreement_id}/tenant")
+async def update_tenant_info(agreement_id: str, data: TenantUpdateRequest):
+    agreement = await db.agreements.find_one({"id": agreement_id}, {"_id": 0})
+    if not agreement:
+        raise HTTPException(status_code=404, detail="Avtal hittades inte")
+    
+    if agreement['status'] != AgreementStatus.PENDING_TENANT_SIGNATURE:
+        raise HTTPException(status_code=400, detail="Avtalet kan inte längre ändras")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    await db.agreements.update_one(
+        {"id": agreement_id},
+        {"$set": {
+            "tenant": {
+                "name": data.name,
+                "personnummer": data.personnummer,
+                "address": data.address,
+                "postal_code": data.postal_code,
+                "city": data.city,
+                "phone": data.phone,
+                "email": data.email or agreement['tenant'].get('email', ''),
+            },
+            "updated_at": now
+        }}
+    )
+    
+    return {"message": "Hyresgästens uppgifter uppdaterade"}
+
 # Mock BankID - Start Signing
 @api_router.post("/agreements/{agreement_id}/bankid/start")
 async def start_bankid_signing(agreement_id: str, data: BankIDSignRequest):
