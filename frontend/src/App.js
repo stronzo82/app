@@ -155,7 +155,7 @@ const HeroSection = () => {
           <div className="animate-fade-in-up animation-delay-200">
             <div className="relative">
               <img
-                src="https://images.unsplash.com/photo-1746682975155-ae1cce0853a3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHwxfHxjb3VwbGUlMjBtb3ZpbmclMjBpbnRvJTIwYXBhcnRtZW50JTIwa2V5c3xlbnwwfHx8fDE3NzAzMDgwNjV8MA&ixlib=rb-4.1.0&q=85"
+                src="/hero.jpg"
                 alt="Nycklar till ny lägenhet"
                 className="hero-image w-full aspect-[4/3] object-cover"
                 data-testid="hero-image"
