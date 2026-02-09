@@ -276,7 +276,7 @@ const BenefitsSection = () => {
           {/* Left Image */}
           <div className="order-2 lg:order-1">
             <img
-              src="https://images.unsplash.com/photo-1757262798620-c2cc40cfb440?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzZ8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBzY2FuZGluYXZpYW4lMjBsaXZpbmclMjByb29tJTIwaW50ZXJpb3IlMjBicmlnaHR8ZW58MHx8fHwxNzcwMzA4MDcwfDA&ixlib=rb-4.1.0&q=85"
+              src="/benefits.jpg"
               alt="Modernt skandinaviskt vardagsrum"
               className="hero-image w-full aspect-[4/3] object-cover"
               data-testid="benefits-image"
